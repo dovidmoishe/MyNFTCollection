@@ -71,6 +71,15 @@
   font-size: 18px;
   font-weight: bold;
 }
+.spinner {
+  margin-top: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.change-network-prompt {
+  color: white;
+}
 
 .footer-container {
   display: flex;

@@ -2,10 +2,11 @@ import "./styles/App.css";
 import twitterLogo from "./assets/twitter-logo.svg";
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
+import { MetroSpinner } from "react-spinners-kit";
 import contractAbi from "./utils/contractAbi.json";
 
 // Constants
-const TWITTER_HANDLE = "_buildspace";
+const TWITTER_HANDLE = "thekideveloper";
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 const OPENSEA_LINK = "";
 const TOTAL_MINT_COUNT = 50;
@@ -14,6 +15,7 @@ const App = () => {
   const contractAddress = "0xA455f0aF731681B6a03095701b5E98BD3eB17F67";
   const [account, setAccount] = useState("");
   const [correctNetwork, setCorrectNetwork] = useState(false);
+  const [loading, setLoading] = useState(false);
   // Render Methods
   const checkIfWalletIsConnected = async () => {
     const { ethereum } = window;
@@ -80,13 +82,17 @@ const App = () => {
           contractAbi,
           signer
         );
-
         const txn = await NFTContract.makeAnNFT();
+        setLoading(true);
 
         console.log("Mining...please wait.");
         await txn.wait();
 
+        setLoading(false);
         console.log(
+          `Mined, see transaction: https://goerli.etherscan.io/tx/${txn.hash}`
+        );
+        alert(
           `Mined, see transaction: https://goerli.etherscan.io/tx/${txn.hash}`
         );
       } else {
@@ -114,16 +120,28 @@ const App = () => {
           <p className="header gradient-text">NFT Collection</p>
           <p className="sub-text">Get your NFT ticket now!</p>
           {account !== "" ? (
-            <button
-              onClick={mintNFT}
-              className="cta-button connect-wallet-button"
-            >
-              Mint NFT
-            </button>
+            <>
+              <button
+                onClick={mintNFT}
+                className="cta-button connect-wallet-button"
+              >
+                Mint NFT
+              </button>
+              <div className="spinner">
+                <MetroSpinner
+                  size={40}
+                  frontColor="blue"
+                  backColor="white"
+                  loading={loading}
+                />
+              </div>
+            </>
           ) : correctNetwork ? (
             renderNotConnectedContainer()
           ) : (
-            <div>Change network to Goerli</div>
+            <div className="change-network-prompt">
+              Change network to Goerli
+            </div>
           )}
         </div>
         <div className="footer-container">
@@ -133,7 +151,7 @@ const App = () => {
             href={TWITTER_LINK}
             target="_blank"
             rel="noreferrer"
-          >{`built on @${TWITTER_HANDLE}`}</a>
+          >{`built by @${TWITTER_HANDLE}`}</a>
         </div>
       </div>
     </div>
