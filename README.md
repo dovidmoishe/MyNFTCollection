@@ -9,3 +9,11 @@ npx hardhat help
 
 npx hardhat run scripts/deploy.js
 ```
+
+Run these commands to start your frontend:
+
+```shell
+cd buildspace-nft-course-starter
+npm install
+npm run start
+```
