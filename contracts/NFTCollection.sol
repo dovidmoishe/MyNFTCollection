@@ -7,6 +7,8 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
 
 contract MyNFT is ERC721 {
+    uint256 public maxSupplyOfToken = 50;
+    event newNFTMinted(address sender, uint256 tokenId);
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -14,14 +16,22 @@ contract MyNFT is ERC721 {
         console.log("This is my NFT contract. Whoa!");
     }
 
+
     function makeAnNFT() public {
+        require(_tokenIds.current() <= maxSupplyOfToken, "We have reached max supply");
         uint256 newItemId = _tokenIds.current();
 
         _safeMint(msg.sender, newItemId);
 
         _tokenIds.increment();
+
+        emit newNFTMinted(msg.sender, newItemId);
     }
 
+    function getTotalNFTsMintedSoFar() public view returns (uint256) {
+        uint256 totalNFTsMintedSoFar = _tokenIds.current();
+        return totalNFTsMintedSoFar;
+    }
     function tokenURI(uint256 itemId)
         public
         view
