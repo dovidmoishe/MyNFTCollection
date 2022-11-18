@@ -8,14 +8,15 @@ import contractAbi from "./utils/contractAbi.json";
 // Constants
 const TWITTER_HANDLE = "thekideveloper";
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
-const OPENSEA_LINK = "";
+const OPENSEA_LINK = "https://testnets.opensea.io/collection/freshmannft-v4";
 const TOTAL_MINT_COUNT = 50;
 
 const App = () => {
-  const contractAddress = "0xA455f0aF731681B6a03095701b5E98BD3eB17F67";
+  const contractAddress = "0xafC0B89F15868Bcc7757Db6aD0254e017E642355";
   const [account, setAccount] = useState("");
   const [correctNetwork, setCorrectNetwork] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [mintCount, setMintCount] = useState(0);
   // Render Methods
   const checkIfWalletIsConnected = async () => {
     const { ethereum } = window;
@@ -102,12 +103,49 @@ const App = () => {
       console.log(err);
     }
   };
+  const getMintCount = async () => {
+    try {
+      const { ethereum } = window;
+
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const contract = new ethers.Contract(
+          contractAddress,
+          contractAbi,
+          signer
+        );
+
+        const totalNumberOfNFTsMintedFromContract =
+          await contract.getTotalNFTsMintedSoFar();
+
+        setMintCount(parseInt(totalNumberOfNFTsMintedFromContract._hex));
+      } else {
+        console.log("The ethereum object is not found");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  getMintCount();
+
   const renderNotConnectedContainer = () => (
     <button
       className="cta-button connect-wallet-button"
       onClick={connectWallet}
     >
       Connect to Wallet
+    </button>
+  );
+  const renderViewCollectionContainer = () => (
+    <button
+      className="cta-button opensea-button"
+      onClick={() => {
+        window.open(OPENSEA_LINK);
+      }}
+    >
+      View Collection on Opensea
     </button>
   );
   useEffect(() => {
@@ -119,6 +157,8 @@ const App = () => {
         <div className="header-container">
           <p className="header gradient-text">NFT Collection</p>
           <p className="sub-text">Get your NFT ticket now!</p>
+          {renderViewCollectionContainer()}
+          <br />
           {account !== "" ? (
             <>
               <button
@@ -143,6 +183,9 @@ const App = () => {
               Change network to Goerli
             </div>
           )}
+          <p className="mint-count">
+            {mintCount} / {TOTAL_MINT_COUNT} NFTs Minted
+          </p>
         </div>
         <div className="footer-container">
           <img alt="Twitter Logo" className="twitter-logo" src={twitterLogo} />
