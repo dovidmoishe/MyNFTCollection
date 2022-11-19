@@ -90,12 +90,12 @@ const App = () => {
         await txn.wait();
 
         setLoading(false);
-        console.log(
-          `Mined, see transaction: https://goerli.etherscan.io/tx/${txn.hash}`
-        );
-        alert(
-          `Mined, see transaction: https://goerli.etherscan.io/tx/${txn.hash}`
-        );
+        NFTContract.on("newNFTMinted", (from, tokenId) => {
+          console.log(from, tokenId.toNumber());
+          alert(
+            `Hey there! We've minted your NFT. It may be blank right now. It can take a max of 10 min to show up on OpenSea. Here's the link: <https://testnets.opensea.io/assets/goerli/${contractAddress}/${tokenId.toNumber()}>`
+          );
+        });
       } else {
         console.log("Couldn't find the ethereum object");
       }
